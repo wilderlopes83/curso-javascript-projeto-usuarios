@@ -11,4 +11,18 @@ fields.forEach((field, index) => {
     }    
 })
 
-console.log(user);
+//console.log(user);
+
+/*
+document.querySelectorAll('button').forEach((btn)=>{
+    btn.addEventListener('click', (e) => {
+        alert(`clicou no ${btn.className}`);
+    });
+});
+*/
+document.getElementById('form-user-create').addEventListener('submit', (event)=>{
+    //para cancelar o submit padrão do formulário
+    event.preventDefault();
+
+    console.log(user);
+});
