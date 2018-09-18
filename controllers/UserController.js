@@ -2,6 +2,8 @@ class UserController{
     constructor(formId, tableId){
         this.formEl = document.getElementById(formId);
         this.tableEl = document.getElementById(tableId);
+
+        this.onSubmit();
     }
 
 
@@ -20,13 +22,10 @@ class UserController{
     getValues(){
 
         let user = {};
-        console.log(this.formEl);
         let fields = this.formEl.elements;
 
-        console.log(fields);
+        [fields].forEach((field, index) => {
 
-        fields.forEach((field, index) => {
-            //console.log(`${index} - ${field.name}`);
             if (field.name=='gender'){
                 if (field.checked){
                     user[field.name] = field.value;
@@ -51,7 +50,7 @@ class UserController{
     }
         
     addLine(dataUser){
-        console.log(dataUser);
+        
         let tr = document.createElement("tr");
         tr.innerHTML = `
                 <td>
@@ -67,7 +66,7 @@ class UserController{
                 </td>
         `;
     
-        document.getElementById(this.tableEl).appendChild(tr);
+        this.tableEl.appendChild(tr);
     }    
     
 }
