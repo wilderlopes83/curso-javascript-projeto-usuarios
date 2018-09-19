@@ -14,9 +14,34 @@ class UserController{
             //para cancelar o submit padrão do formulário
             event.preventDefault();       
             
-            //console.log(user);
-            this.addLine(this.getValues());
+            let values = this.getValues();            
+
+            this.getPhoto((content)=> {
+                values.photo =content;
+
+                this.addLine(values);
+            });           
+            
         });
+    }
+
+    getPhoto(callback){
+        let fileReader = new FileReader();
+
+        let elements = [...this.formEl.elements].filter(item => {
+            if (item.name == "photo"){
+                return item;
+            }
+        });
+
+        let file = elements[0].files[0];
+
+        fileReader.onload = () => {
+
+            callback(fileReader.result);
+        }
+
+        fileReader.readAsDataURL(file);
     }
 
     getValues(){
@@ -24,7 +49,9 @@ class UserController{
         let user = {};
         let fields = this.formEl.elements;
 
-        [fields].forEach((field, index) => {
+        //esses 3 primeiros pontos e colocar o objeto entre [] é uma técnica chamada "spread"
+        //isso transforma o objeto em array e os ... significam que não preciso informar os índices... 
+        [...fields].forEach((field, index) => {
 
             if (field.name=='gender'){
                 if (field.checked){
@@ -54,7 +81,7 @@ class UserController{
         let tr = document.createElement("tr");
         tr.innerHTML = `
                 <td>
-                <img src="dist/img/user1-128x128.jpg" alt="User Image" class="img-circle img-sm">
+                <img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm">
                 </td>
                 <td>${dataUser.name}</td>
                 <td>${dataUser.email}</td>
