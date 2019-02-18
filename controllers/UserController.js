@@ -13,14 +13,23 @@ class UserController{
         this.formEl.addEventListener('submit', (event)=>{
             //para cancelar o submit padrão do formulário
             event.preventDefault();       
+
+            let btn = this.formEl.querySelector("[type=submit]");
+
+            btn.disabled = true;
             
             let values = this.getValues();            
+
+            //tratamento: se retornou false, nem tenta pegar a informação de foto (seguimento do fluxo)
+            if (! values) return false;
 
             //utilizando Promises para tratar solicitações assíncronas
             this.getPhoto().then(
                 (content) => {
                     values.photo =content;
                     this.addLine(values);                    
+                    this.formEl.reset()
+                    btn.disabled = false;
                 },
                 (e) => {
                     console.error(e);
@@ -76,13 +85,21 @@ class UserController{
         [...fields].forEach((field, index) => {
 
             //validação se campos obrigatórios preenchidos
-            if (['name', 'email', 'password'].indexOf(field.name) > -1 && !field.value){
+            if (['name', 'email', 'password'].indexOf(field.name) > -1){
 
-                //inclui a classe has-error no elemento pai do formulário
-                field.parentElement.classList.add('has-error');
-                isValid = false;
-                return false;
+                if (!field.value){
+                    
+                    //inclui a classe has-error no elemento pai do formulário
+                    field.parentElement.classList.add('has-error');
+                    isValid = false;
+                    return false;
+                }
+                else{
+                    field.parentElement.classList.remove('has-error');
+                }
+
             }
+            
 
             if (field.name=='gender'){
                 if (field.checked){
@@ -115,6 +132,11 @@ class UserController{
     addLine(dataUser){
         
         let tr = document.createElement("tr");
+
+        //adicionando informações ao objeto dataset do HTML, que armazena informações que eu quiser
+        //no caso abaixo, os dados do usuário. Uso stringfy para armazenar o objeto em formato JSON
+        tr.dataset.user = JSON.stringify(dataUser);
+
         tr.innerHTML = `
                 <td>
                 <img src="${dataUser.photo}" alt="User Image" class="img-circle img-sm">
@@ -130,6 +152,29 @@ class UserController{
         `;
     
         this.tableEl.appendChild(tr);
+
+        //atualizar contadores
+        this.updateCount();
+
     }    
+
+    updateCount(){
+
+        let numberUsers = 0;
+        let numberAdmin = 0;
+
+        [...this.tableEl.children].forEach(tr=>{
+
+            numberUsers++;
+
+            let user = JSON.parse(tr.dataset.user);
+
+            if (user._admin) numberAdmin++;
+
+        });
+
+        document.querySelector("#number-users").innerHTML = numberUsers;
+        document.querySelector("#number-users-admin").innerHTML = numberAdmin;
+    }
     
 }
