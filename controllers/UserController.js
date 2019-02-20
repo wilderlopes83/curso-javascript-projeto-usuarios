@@ -161,7 +161,39 @@ class UserController{
 
         tr.querySelector(".btn-edit").addEventListener("click", e=>{
 
-            console.log(JSON.parse(tr.dataset.user));
+            let json = JSON.parse(tr.dataset.user);
+            let form = document.querySelector("#form-user-update");
+
+            //faz o de/para do json para os campos do formulario
+            for (let name in json){
+                
+                let field = form.querySelector(`[name="${name.replace("_", "")}"]`);
+
+                //se encontrou o campo...
+                if (field){
+
+                    switch (field.type){
+                        case 'file':
+                        continue; //continua o loop
+                        break; //sai do switch
+
+                        case 'radio':
+                            field = form.querySelector(`[name="${name.replace("_", "")}"][value="${json[name]}"] `);
+                            field.checked = true;
+                        break;
+
+                        case 'checkbox':
+                            field.checked = json[name];
+                        break;
+
+                        default:
+                            field.value = json[name];
+                    }
+                }
+
+                
+            }
+
             this.showPanelUpdate();
 
         })
