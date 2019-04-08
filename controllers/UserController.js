@@ -55,7 +55,7 @@ class UserController{
                     <td>${Utils.dateFormat(result._register)}</td>
                     <td>
                     <button type="button" class="btn btn-primary btn-edit btn-xs btn-flat">Editar</button>
-                    <button type="button" class="btn btn-danger btn-xs btn-flat">Excluir</button>
+                    <button type="button" class="btn btn-danger btn-delete btn-xs btn-flat">Excluir</button>
                     </td>
                     `;    
 
@@ -232,45 +232,57 @@ class UserController{
     addEventsTr(tr) {
 
         tr.querySelector(".btn-delete").addEventListener("click", e => {
-                if (confirm('Tem certeza que deseja excluir?')){
-                    tr.remove();
-                    this.updateCount();
-                }
+                this.deleteLine(tr);
             }
-        );
+        );        
 
         tr.querySelector(".btn-edit").addEventListener("click", e => {
-            let json = JSON.parse(tr.dataset.user);
-            
-            //adiciona um índice para controlar o grid            
-            this.formUpdateEl.dataset.trIndex = tr.sectionRowIndex;
-            //faz o de/para do json para os campos do formulario
-            for (let name in json) {
-                let field = this.formUpdateEl.querySelector(`[name="${name.replace("_", "")}"]`);
-                //se encontrou o campo...
-                if (field) {
-                    switch (field.type) {
-                        case 'file':
-                            continue; //continua o loop
-                            break; //sai do switch
-                        case 'radio':
-                            field = this.formUpdateEl.querySelector(`[name="${name.replace("_", "")}"][value="${json[name]}"] `);
-                            field.checked = true;
-                            break;
-                        case 'checkbox':
-                            field.checked = json[name];
-                            break;
-                        default:
-                            field.value = json[name];
-                    }
-                }
-            }
-
-            this.formUpdateEl.querySelector(".photo").src = json._photo;
-
-            this.showPanelUpdate();
+           this.prepareUpdatePanel(tr);
         });
     }
+
+    deleteLine(tr){
+        
+        if (confirm('Tem certeza que deseja excluir?')){
+            tr.remove();
+            this.updateCount();
+        }
+
+    }
+
+    prepareUpdatePanel(tr){
+        let json = JSON.parse(tr.dataset.user);
+            
+        //adiciona um índice para controlar o grid            
+        this.formUpdateEl.dataset.trIndex = tr.sectionRowIndex;
+        //faz o de/para do json para os campos do formulario
+        for (let name in json) {
+            let field = this.formUpdateEl.querySelector(`[name="${name.replace("_", "")}"]`);
+            //se encontrou o campo...
+            if (field) {
+                switch (field.type) {
+                    case 'file':
+                        continue; //continua o loop
+                        break; //sai do switch
+                    case 'radio':
+                        field = this.formUpdateEl.querySelector(`[name="${name.replace("_", "")}"][value="${json[name]}"] `);
+                        field.checked = true;
+                        break;
+                    case 'checkbox':
+                        field.checked = json[name];
+                        break;
+                    default:
+                        field.value = json[name];
+                }
+            }
+        }
+
+        this.formUpdateEl.querySelector(".photo").src = json._photo;
+
+        this.showPanelUpdate();
+    }
+
+    
 
     showPanelCreate(){
         document.querySelector("#box-user-create").style.display = "block";
